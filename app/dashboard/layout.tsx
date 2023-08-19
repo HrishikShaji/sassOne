@@ -4,19 +4,15 @@ import React from "react";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import Stripe from "stripe";
-
-const stripe = new Stripe("sk_test_...", {
-  apiVersion: "2023-08-16",
-});
+import { mustBeLoggedIn } from "@/lib/auth";
+import {
+  createCheckoutLink,
+  createCustomerIfNull,
+  hasSubscription,
+} from "@/lib/stripe";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
-  const session = await getServerSession(authOptions);
-
-  if (session) {
-    console.log("logged in");
-  } else {
-    redirect("/api/auth/signin");
-  }
+  await mustBeLoggedIn();
 
   return (
     <div>
